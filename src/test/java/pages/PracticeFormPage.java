@@ -1,15 +1,21 @@
 package pages;
 
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import data.CalendarDate;
 import pages.components.CalendarComponent;
 import pages.components.ModalComponent;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class PracticeFormPage {
+    private static final String PAGE_HEADER = "Practice Form";
+    private static final String FORM_HEADER = "Student Registration Form";
+
     private final SelenideElement formWrapper = $(".practice-form-wrapper");
     private final SelenideElement firstNameInput = $("#firstName");
     private final SelenideElement lastNameInput = $("#lastName");
@@ -28,8 +34,8 @@ public class PracticeFormPage {
     public PracticeFormPage open() {
         Selenide.open("/automation-practice-form");
 
-        formWrapper.shouldHave(text("Practice Form"));
-        formWrapper.shouldHave(text("Student Registration Form"));
+        formWrapper.shouldHave(text(PAGE_HEADER));
+        formWrapper.shouldHave(text(FORM_HEADER));
 
         executeJavaScript("$('#fixedban').remove()");
         executeJavaScript("$('footer').remove()");
@@ -61,10 +67,10 @@ public class PracticeFormPage {
         return this;
     }
 
-    public PracticeFormPage selectDateOfBirth(String year, String month, int day) {
+    public PracticeFormPage selectDateOfBirth(CalendarDate date) {
         CalendarComponent calendar = new CalendarComponent(dateOfBirthInput);
         calendar.click();
-        calendar.setDate(year, month, day);
+        calendar.setDate(date);
         return this;
     }
 
@@ -95,7 +101,7 @@ public class PracticeFormPage {
     public PracticeFormPage selectState(String state) {
         stateDropdown.click();
         stateDropdown.$$("div")
-                .filterBy(text(state))
+                .filterBy(exactText(state))
                 .first()
                 .click();
         return this;
@@ -104,7 +110,7 @@ public class PracticeFormPage {
     public PracticeFormPage selectCity(String city) {
         cityDropdown.click();
         cityDropdown.$$("div")
-                .filterBy(text(city))
+                .filterBy(exactText(city))
                 .first()
                 .click();
         return this;
@@ -112,6 +118,41 @@ public class PracticeFormPage {
 
     public void clickSubmit() {
         submitButton.click();
+    }
+
+    public PracticeFormPage shouldHaveInvalidFirstNameField() {
+        shouldHaveInvalidField(firstNameInput);
+        return this;
+    }
+
+    public PracticeFormPage shouldHaveInvalidLastNameField() {
+        shouldHaveInvalidField(lastNameInput);
+        return this;
+    }
+
+    public PracticeFormPage shouldHaveInvalidEmailField() {
+        shouldHaveInvalidField(emailInput);
+        return this;
+    }
+
+    public PracticeFormPage shouldHaveInvalidGenderRadioGroup() {
+        ElementsCollection radios = genderWrapper.$$("input[name=gender]");
+        for (SelenideElement radio : radios) {
+            shouldHaveInvalidField(radio);
+        }
+        return this;
+    }
+
+    public PracticeFormPage shouldHaveInvalidMobileField() {
+        shouldHaveInvalidField(mobileInput);
+        return this;
+    }
+
+    private void shouldHaveInvalidField(SelenideElement field) {
+        // JS: document.querySelector('<selector>').validity.valid
+        // JQuery: $('<selector>')[0].validity.valid
+        Boolean isValid = executeJavaScript("return arguments[0].validity.valid;", field);
+        assertNotEquals(Boolean.TRUE, isValid, "Expected field to be invalid");
     }
 
     public static class ResultModal {
@@ -161,8 +202,8 @@ public class PracticeFormPage {
             return this;
         }
 
-        public ResultModal shouldHaveDateOfBirth(String year, String month, int day) {
-            String formattedDate = day + " " + month + "," + year;
+        public ResultModal shouldHaveDateOfBirth(CalendarDate date) {
+            String formattedDate = String.format("%02d %s,%s", date.day(), date.month(), date.year());
             modal.shouldHaveField(DATE_OF_BIRTH_LABEL, formattedDate);
             return this;
         }

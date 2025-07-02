@@ -1,6 +1,7 @@
 package pages.components;
 
 import com.codeborne.selenide.SelenideElement;
+import data.CalendarDate;
 
 import static com.codeborne.selenide.Selenide.$;
 
@@ -11,11 +12,11 @@ public class CalendarComponent {
         this.element = element;
     }
 
-    public void setDate(String year, String month, int day) {
-        $(".react-datepicker__year-select").selectOption(year);
-        $(".react-datepicker__month-select").selectOption(month);
+    public void setDate(CalendarDate date) {
+        $(".react-datepicker__year-select").selectOption(date.year());
+        $(".react-datepicker__month-select").selectOption(date.month());
 
-        String formattedDay = String.format("%03d", day); // 1 -> "001"
+        String formattedDay = String.format("%03d", date.day()); // 1 -> "001"
         $(".react-datepicker__day--" + formattedDay + ":not(.react-datepicker__day--outside-month)").click();
     }
 

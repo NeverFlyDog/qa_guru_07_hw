@@ -39,7 +39,7 @@ public class ModalComponent {
         if (expectedValue.trim().isEmpty()) {
             valueElement.shouldBe(empty);
         } else {
-            valueElement.shouldHave(text(expectedValue));
+            valueElement.shouldHave(exactText(expectedValue));
         }
     }
 
