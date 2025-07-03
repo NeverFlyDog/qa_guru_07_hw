@@ -8,13 +8,13 @@ import java.time.format.TextStyle;
 import java.util.*;
 
 public class PracticeFormTestData {
-    private static final String FILENAME = "test.jpg";
     private static final String[] GENDERS = {"Male", "Female", "Other"};
     private static final String[] HOBBIES = {"Sports", "Reading", "Music"};
     private static final String[] SUBJECTS = {
             "Hindi", "English", "Maths", "Physics", "Chemistry", "Biology", "Computer Science", "Commerce",
             "Accounting", "Economics", "Arts", "Social Studies", "History", "Civics"
     };
+    private static final String[] FILENAMES = {"test.jpg", "test card.jpg", "test-button.png"};
     private static final Map<String, List<String>> stateToCities = Map.of(
             "NCR", List.of("Delhi", "Gurgaon", "Noida"),
             "Uttar Pradesh", List.of("Agra", "Lucknow", "Merrut"),
@@ -41,12 +41,12 @@ public class PracticeFormTestData {
     public PracticeFormTestData() {
         this.firstName = faker.name().firstName();
         this.lastName = faker.name().lastName();
-        this.gender = getRandomGender();
+        this.gender = faker.options().option(GENDERS);
         this.dateOfBirth = generateDateOfBirth();
         this.email = faker.internet().emailAddress();
         this.mobile = getRandomMobile();
         this.currentAddress = faker.address().fullAddress();
-        this.filename = FILENAME;
+        this.filename = faker.options().option(FILENAMES);
 
         String[] stateCity = getRandomStateAndCity();
         this.state = stateCity[0];
@@ -54,7 +54,6 @@ public class PracticeFormTestData {
 
         this.hobbies = getRandomSubset(HOBBIES);
         this.subjects = getRandomSubset(SUBJECTS);
-
     }
 
     public String getFirstName() {
@@ -117,10 +116,6 @@ public class PracticeFormTestData {
         String monthName = birthDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
 
         return new CalendarDate(String.valueOf(year), monthName, day);
-    }
-
-    private static String getRandomGender() {
-        return GENDERS[random.nextInt(GENDERS.length)];
     }
 
     private static String getRandomMobile() {
