@@ -34,12 +34,19 @@ public class PracticeFormPage {
     public PracticeFormPage open() {
         Selenide.open("/automation-practice-form");
 
-        formWrapper.shouldHave(text(PAGE_HEADER));
-        formWrapper.shouldHave(text(FORM_HEADER));
+        cleanupPageLayout();
+        verifyContentHeaders();
+        return this;
+    }
 
+    private void cleanupPageLayout() {
         executeJavaScript("$('#fixedban').remove()");
         executeJavaScript("$('footer').remove()");
-        return this;
+    }
+
+    private void verifyContentHeaders() {
+        formWrapper.shouldHave(text(PAGE_HEADER));
+        formWrapper.shouldHave(text(FORM_HEADER));
     }
 
     public PracticeFormPage setFirstName(String firstName) {
